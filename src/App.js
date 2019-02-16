@@ -1,28 +1,40 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { connect } from 'react-redux'
+import { thunkFetchData } from './actions/app'
 
 class App extends Component {
+  componentDidMount() {
+    console.log('Mounted')
+    this.props.fetchData()
+  }
+
   render() {
+    const { data } = this.props
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+      <div>
+        <ul>
+          {
+            data.map(item => (
+              <li key={item.id}>{item.joke}</li>
+            ))
+          }
+        </ul>
       </div>
     );
   }
 }
 
-export default App;
+const mapStateToProps = (state) => {
+  console.log('state: ', state)
+  return {
+    data: state.fetched,
+    isFetching: state.isFetching,
+    error: state.fetchedError
+  }
+}
+const mapDispatchToProps = (dispatch) => {
+  return {
+    fetchData: () => dispatch(thunkFetchData)
+  }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(App)
